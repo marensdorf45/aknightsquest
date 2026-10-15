@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discover Your Knight Path | BMHS</title>
+<style>
+:root{--purple:#3b176b;--purple2:#57279a;--gold:#f5bd3e;--ink:#211b2b;--muted:#6b6474;--paper:#f7f5fb;--white:#fff;--line:#e8e1f0;--green:#19785b}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--paper);color:var(--ink)}
+header{background:linear-gradient(120deg,#28104c,#57279a);color:white;padding:22px max(22px,calc((100vw - 1180px)/2));}
+.top{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}.brand{font-weight:900;letter-spacing:.08em;font-size:.86rem}.brand span{color:var(--gold)}nav{display:flex;gap:8px;flex-wrap:wrap}nav button{border:1px solid #ffffff50;background:transparent;color:white;border-radius:99px;padding:9px 13px;cursor:pointer;font-weight:700}nav button.active,nav button:hover{background:white;color:var(--purple)}
+.hero{max-width:1180px;margin:0 auto;padding:55px 22px 50px;display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center}.eyebrow{color:var(--gold);font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:.78rem}.hero h1{font-size:clamp(2.6rem,6vw,5.4rem);line-height:.98;letter-spacing:-.055em;margin:15px 0}.hero h1 em{font-style:normal;color:var(--gold)}.hero p{font-size:1.1rem;line-height:1.65;color:#eee6fa;max-width:650px}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:850;cursor:pointer;font-size:.95rem}.primary{background:var(--gold);color:#2a1741}.secondary{background:#ffffff18;border:1px solid #ffffff66;color:white}.hero-art{min-height:290px;border:1px solid #ffffff35;border-radius:26px;padding:24px;background:radial-gradient(circle at 75% 25%,#8152bc 0,transparent 36%),linear-gradient(145deg,#49217d,#281044);display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 20px 50px #17092c50}.orbit{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.orbit div{background:#ffffff14;border:1px solid #ffffff2a;border-radius:16px;padding:16px;font-weight:800}.orbit b{display:block;font-size:1.8rem;margin-bottom:6px}.orbit small{color:#e7dcf6;font-weight:500}.hero-art .big{font-size:2.3rem;font-weight:950;line-height:1.05}.hero-art .big span{color:var(--gold)}
+main{max-width:1180px;margin:0 auto;padding:32px 22px 70px}.section{margin:0 0 46px;scroll-margin-top:20px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:18px}.section h2{font-size:clamp(1.7rem,3vw,2.4rem);letter-spacing:-.04em;margin:0 0 8px}.section-head p{margin:0;color:var(--muted);line-height:1.55}.pill{display:inline-flex;align-items:center;gap:7px;border-radius:99px;padding:7px 11px;background:#eee6f7;color:var(--purple);font-size:.78rem;font-weight:900}.path-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.path-card,.course-card,.panel{background:white;border:1px solid var(--line);border-radius:19px;padding:20px;box-shadow:0 5px 18px #2b15400a}.path-card{cursor:pointer;transition:.18s;min-height:178px}.path-card:hover,.path-card.selected{transform:translateY(-3px);border-color:var(--purple2);box-shadow:0 10px 24px #3b176b16}.path-card .emoji{font-size:2rem}.path-card h3{margin:13px 0 6px}.path-card p{font-size:.9rem;color:var(--muted);line-height:1.5;margin:0}
+
+.quest-shell{background:linear-gradient(135deg,#2b1249,#54228a);color:white;border-radius:24px;padding:clamp(18px,3vw,30px);box-shadow:0 18px 40px #29133f20}
+.quest-head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.quest-kicker{color:var(--gold);font-size:.75rem;font-weight:950;letter-spacing:.14em;text-transform:uppercase}
+.quest-progress{height:8px;background:#ffffff2c;border-radius:99px;overflow:hidden;margin:18px 0 24px}
+.quest-progress-fill{height:100%;width:0;background:var(--gold);border-radius:99px;transition:width .25s}
+.quest-question{font-size:clamp(1.4rem,3vw,2.1rem);line-height:1.15;letter-spacing:-.035em;margin:0 0 8px}
+.quest-sub{color:#e8dcf6;line-height:1.5;margin:0 0 20px}
+.quest-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.quest-choice{display:flex;align-items:flex-start;gap:12px;text-align:left;border:1px solid #ffffff50;background:#ffffff12;color:white;padding:16px;border-radius:15px;cursor:pointer;font:inherit;transition:.15s;min-height:94px}
+.quest-choice:hover{background:#ffffff25;transform:translateY(-2px)}
+.quest-choice.selected{background:#fff;color:var(--purple);border-color:var(--gold);box-shadow:inset 0 0 0 2px var(--gold)}
+.quest-choice .qemoji{font-size:1.7rem;line-height:1.2}
+.quest-choice strong{display:block;margin-bottom:5px}
+.quest-choice small{display:block;line-height:1.4;opacity:.84}
+.quest-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:20px}
+.quest-controls .btn:disabled{opacity:.45;cursor:not-allowed}
+.quest-result-grid{display:grid;grid-template-columns:1fr .8fr;gap:14px;margin-top:18px}
+.quest-result-card{background:#ffffff12;border:1px solid #ffffff35;border-radius:17px;padding:18px}
+.quest-result-card h3{margin:8px 0;font-size:1.35rem}
+.quest-result-card p,.quest-result-card li{color:#e8dcf6;line-height:1.55}
+.quest-result-card .mini{margin:4px 4px 4px 0}
+.quest-tags{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+.quest-tag{background:#ffffff18;border:1px solid #ffffff30;border-radius:999px;padding:6px 9px;font-size:.78rem;font-weight:800}
+.quest-badge{display:inline-flex;background:var(--gold);color:#32144f;border-radius:99px;padding:7px 11px;font-size:.78rem;font-weight:950}
+.quest-start{text-align:center;padding:20px 8px}
+.quest-start .hero-icon{font-size:3.4rem}
+.quest-start h3{font-size:clamp(1.7rem,4vw,2.5rem);margin:10px 0}
+.quest-start p{max-width:650px;margin:0 auto 20px;color:#e8dcf6;line-height:1.65}
+.quest-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+@media(max-width:650px){.quest-choices,.quest-result-grid{grid-template-columns:1fr}.quest-choice{min-height:auto}}
+
+.pathway-explorer{background:linear-gradient(135deg,#f8f4fc,#fff);border:1px solid var(--line);border-radius:22px;padding:22px;margin-top:18px}
+.pathway-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.pathway-tab{border:1px solid #d8cce7;border-radius:999px;padding:10px 14px;background:white;color:var(--ink);font:inherit;font-weight:800;cursor:pointer}
+.pathway-tab.active{background:var(--purple);color:white;border-color:var(--purple)}
+.pathway-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:stretch}
+.pathway-step{position:relative;background:white;border:1px solid var(--line);border-radius:16px;padding:16px;min-height:155px}
+.pathway-step .step-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--purple);margin-bottom:9px}
+.pathway-step h3{font-size:1rem;margin:0 0 8px}
+.pathway-step p{font-size:.87rem;line-height:1.5;color:var(--muted);margin:0 0 10px}
+.pathway-step button{border:0;background:#f0e8f8;color:var(--purple);border-radius:9px;padding:8px 10px;font-weight:850;cursor:pointer}
+.pathway-step:not(:last-child):after{content:"→";position:absolute;right:-13px;top:46%;z-index:1;background:var(--gold);color:#38204d;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;font-weight:900}
+.pathway-note{font-size:.85rem;color:var(--muted);line-height:1.5;margin-top:14px}
+.pd-dialog{border:0;padding:0;border-radius:22px;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 48px);box-shadow:0 24px 70px #21102f66;color:var(--ink)}
+.pd-dialog::backdrop{background:#21102fa6;backdrop-filter:blur(3px)}
+.pd-dialog[open]{animation:pdIn .22s ease-out}
+@keyframes pdIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.pd-head{background:linear-gradient(135deg,var(--purple),var(--purple2));color:white;padding:22px 24px 20px;position:relative}
+.pd-head .tag{background:var(--gold);color:#38204d}
+.pd-head h2{margin:10px 40px 0 0;font-size:1.45rem;line-height:1.2}
+.pd-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:0;background:#ffffff26;color:white;font-size:1.2rem;font-weight:900;cursor:pointer}
+.pd-close:hover,.pd-close:focus-visible{background:#ffffff4d}
+.pd-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:14px}
+.pd-body p{margin:0;color:var(--muted);line-height:1.55}
+.pd-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pd-fact{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:.85rem}
+.pd-fact span{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--purple);margin-bottom:3px}
+.pd-section h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--purple);margin:0 0 8px}
+.pd-next{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pd-chip{border:1px solid #d8cce7;border-radius:999px;padding:8px 12px;background:#f0e8f8;color:var(--purple);font:inherit;font-size:.88rem;font-weight:800}
+button.pd-chip{cursor:pointer}button.pd-chip:hover{background:var(--purple);color:white}
+.pd-arrow{color:var(--gold);font-weight:900}
+.pd-note{font-size:.82rem!important;background:#fff8e6;border:1px solid #f5dfa6;border-radius:12px;padding:10px 12px}
+.pd-actions{display:flex;gap:10px;flex-wrap:wrap}
+.pd-actions .btn{margin-top:0}
+.pd-done{background:white;color:var(--purple);border:1px solid #d8cce7}
+@media(max-width:480px){.pd-facts{grid-template-columns:1fr}}
+@media(max-width:800px){.pathway-flow{grid-template-columns:repeat(2,minmax(0,1fr))}.pathway-step:nth-child(2):after{display:none}}
+@media(max-width:480px){.pathway-flow{grid-template-columns:1fr}.pathway-step:after{display:none!important}}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.toolbar input,.toolbar select,.quiz select{border:1px solid #d8cce7;border-radius:11px;padding:12px;background:white;color:var(--ink);font:inherit}.toolbar input{flex:1;min-width:210px}.course-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.course-card{display:flex;flex-direction:column;gap:10px}.course-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.course-card h3{font-size:1.13rem;margin:0}.course-card p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.5}.tag{font-size:.72rem;font-weight:900;padding:5px 8px;border-radius:8px;background:#f1eaf8;color:var(--purple)}.course-card .careers{font-size:.82rem;color:#4f3b67}.course-card .actions{display:flex;gap:8px;margin-top:auto;padding-top:8px}.mini{padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:white;font-weight:800;cursor:pointer}.mini.save{background:var(--purple);color:white;border-color:var(--purple)}.mini.saved{background:#e2f4ed;color:var(--green);border-color:#b7e5d3}.quiz-layout{display:grid;grid-template-columns:1fr .8fr;gap:16px}.quiz{background:white;border:1px solid var(--line);border-radius:20px;padding:24px}.quiz-step{padding:15px 0;border-bottom:1px solid var(--line)}.quiz-step:last-of-type{border:0}.quiz-step label{display:block;font-weight:850;margin-bottom:9px}.quiz select{width:100%}.result{background:#2e1550;color:white;border-radius:20px;padding:24px;min-height:250px}.result h3{font-size:1.5rem;margin-top:0}.result p,.result li{color:#e8def4;line-height:1.55}.result .btn{margin-top:10px}.plan-list{display:flex;flex-direction:column;gap:9px}.plan-item{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:white}.plan-item button{border:0;background:#f5e9eb;color:#9a3342;border-radius:8px;padding:7px 9px;cursor:pointer;font-weight:800}.empty{padding:28px;text-align:center;border:1px dashed #cbbbdc;border-radius:16px;color:var(--muted);background:#fff}.footnote{font-size:.82rem;color:var(--muted);line-height:1.6}.callout{background:#fff8e5;border:1px solid #f1d78e;padding:16px 18px;border-radius:14px;line-height:1.55}.footer{background:#241039;color:#e8def4;padding:28px 22px;text-align:center;font-size:.9rem}.footer a{color:var(--gold)}.toast{position:fixed;bottom:20px;right:20px;background:#21102f;color:white;padding:12px 16px;border-radius:12px;box-shadow:0 8px 30px #0003;display:none;z-index:5}
+@media(max-width:850px){.hero{grid-template-columns:1fr;padding-top:38px}.hero-art{min-height:230px}.path-grid{grid-template-columns:repeat(2,1fr)}.course-grid{grid-template-columns:repeat(2,1fr)}.quiz-layout{grid-template-columns:1fr}}
+@media(max-width:560px){.course-grid,.path-grid{grid-template-columns:1fr}.hero h1{font-size:3.2rem}.top{align-items:flex-start}nav{width:100%}nav button{font-size:.8rem}.orbit div{padding:12px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="top">
+  <div class="brand">BMHS <span>✦</span> KNIGHT PATH</div>
+  <nav>
+   <button class="active" data-jump="start">Start Here</button><button data-jump="quest">Knight Path Quest</button><button data-jump="pathway-map">Pathway Maps</button><button data-jump="explore">Explore Courses</button><button data-jump="quiz">Find My Path</button><button data-jump="myplan">My Knight Path <span id="navCount">0</span></button>
+  </nav>
+ </div>
+ <div class="hero" id="start">
+  <div>
+   <div class="eyebrow">Your interests. Your choices. Your future.</div>
+   <h1>Discover your <em>Knight Path.</em></h1>
+   <p>What if choosing classes felt less like picking from a list and more like discovering what you could become? Explore BMHS courses, connect them to careers, and start building a high school plan that feels like you.</p>
+   <div class="hero-actions"><button class="btn primary" data-jump="quiz">✨ Find my path</button><button class="btn secondary" data-jump="explore">Browse BACH courses ↓</button></div>
+  </div>
+  <div class="hero-art">
+   <div class="big">Your future<br>isn't one <span>straight line.</span></div>
+   <div class="orbit">
+    <div><b>01</b><small>Explore what you love</small></div><div><b>02</b><small>Try something new</small></div>
+    <div><b>03</b><small>Build real skills</small></div><div><b>04</b><small>Map your next move</small></div>
+   </div>
+  </div>
+ </div>
+</header>
+<main>
+ <section class="section" id="pathways">
+  <div class="section-head"><div><span class="pill">PICK A STARTING POINT</span><h2>What kind of work sounds like you?</h2><p>Choose a vibe to explore related classes. You can change your mind anytime.</p></div></div>
+  <div class="path-grid" id="pathGrid">
+   <div class="path-card" data-path="Business"><div class="emoji">🚀</div><h3>Build & lead</h3><p>Start ideas, solve problems, manage money, or run a business.</p></div>
+   <div class="path-card" data-path="Arts"><div class="emoji">🎨</div><h3>Create & design</h3><p>Make visuals, tell stories, perform, and bring ideas to life.</p></div>
+   <div class="path-card" data-path="Communications"><div class="emoji">🎤</div><h3>Tell the story</h3><p>Share messages, create media, market ideas, and connect people.</p></div>
+   <div class="path-card" data-path="Hospitality"><div class="emoji">🍽️</div><h3>Host & serve</h3><p>Create welcoming experiences through food, events, and service.</p></div>
+  </div>
+ </section>
+ <section class="section" id="quest">
+  <div class="section-head"><div><span class="pill">INTERACTIVE CAREER ADVENTURE</span><h2>Knight Path Quest</h2><p>Make a few choices, unlock a direction to explore, and build a course shortlist that fits your interests.</p></div></div>
+  <div class="quest-shell" id="questApp" aria-live="polite">
+   <div class="quest-start">
+    <div class="hero-icon">🧭✨</div>
+    <div class="quest-kicker">Your future, your choices</div>
+    <h3>Ready to discover your Knight Path?</h3>
+    <p>There are no wrong answers and no single “right” future. This short quest helps you notice what you like doing and connects your interests to BMHS BACH courses and possible careers.</p>
+    <div class="quest-actions"><button class="btn primary" id="questStart">Start my quest →</button><button class="btn secondary" data-jump="pathway-map">Explore pathways first</button></div>
+   </div>
+  </div>
+  <p class="footnote">Quest results are suggestions for exploration, not a career test or official course-registration plan. Course eligibility, prerequisites, and current offerings must be confirmed with BMHS staff.</p>
+ </section>
+ <section class="section" id="pathway-map">
+  <div class="section-head"><div><span class="pill">YOUR PATH, STEP BY STEP</span><h2>See how one class can lead somewhere.</h2><p>Pick an interest to explore a sample route from first course to next steps and career possibilities.</p></div></div>
+  <div class="pathway-explorer">
+   <div class="pathway-tabs" role="tablist" aria-label="Choose a BACH pathway">
+    <button class="pathway-tab active" data-map="design" role="tab" aria-selected="true">🎨 Design & creative business</button>
+    <button class="pathway-tab" data-map="business" role="tab" aria-selected="false">🚀 Business & entrepreneurship</button>
+    <button class="pathway-tab" data-map="media" role="tab" aria-selected="false">🎤 Media & communication</button>
+    <button class="pathway-tab" data-map="performance" role="tab" aria-selected="false">🎭 Music & performance</button>
+    <button class="pathway-tab" data-map="hospitality" role="tab" aria-selected="false">🍽️ Hospitality & events</button>
+   </div>
+   <div id="pathwayFlow" class="pathway-flow" aria-live="polite"></div>
+   <p id="pathwayNote" class="pathway-note"></p>
+  </div>
+ </section>
+ <section class="section" id="explore">
+  <div class="section-head"><div><span class="pill">BACH ACADEMY SPOTLIGHT</span><h2>Explore 36+ BACH course options, not just titles.</h2><p>See what you could do, what you could learn, and where it might lead.</p></div><a href="https://memorial.sdb.k12.wi.us/students-and-families/2024-2025-course-guide" target="_blank" rel="noopener" style="color:var(--purple);font-weight:850">Open official course guide ↗</a></div>
+  <div class="callout"><strong>Prototype note:</strong> This version is populated from the 2026–2027 BMHS General Course Guide. The guide names BACH pathways as Business, Arts, Communication, Music and Performing Arts, and Hospitality. Course cards show credits, eligible grades, and prerequisites where listed. Confirm all course details with a counselor before registration.</div>
+  <div class="toolbar"><input id="search" type="search" placeholder="Search courses, skills, or careers…"><select id="areaFilter"><option value="All">All BACH areas</option><option>Business</option><option>Arts</option><option>Communications</option><option>Hospitality</option></select><select id="sortFilter"><option value="featured">Featured first</option><option value="az">Course A–Z</option></select></div>
+  <div class="course-grid" id="courseGrid"></div>
+  <p class="footnote">Career examples are possibilities, not guarantees. Course availability, prerequisites, grade-level eligibility, and graduation requirements should always be confirmed with the official course guide and a BMHS counselor.</p>
+ </section>
+ <section class="section" id="quiz">
+  <div class="section-head"><div><span class="pill">YOUR MINI CAREER QUEST</span><h2>Find a path that fits your style.</h2><p>Answer three quick questions. There are no wrong answers — this is a starting point, not a test.</p></div></div>
+  <div class="quiz-layout">
+   <div class="quiz">
+    <div class="quiz-step"><label for="q1">1. What would you most enjoy making or doing?</label><select id="q1"><option value="">Choose one…</option><option value="Business">Launching a product or business</option><option value="Arts">Designing something people notice</option><option value="Communications">Making a video, campaign, or story</option><option value="Hospitality">Planning an event or creating a great guest experience</option></select></div>
+    <div class="quiz-step"><label for="q2">2. Which strength sounds most like you?</label><select id="q2"><option value="">Choose one…</option><option value="Business">Organizing, planning, or figuring out numbers</option><option value="Arts">Being creative and trying new ideas</option><option value="Communications">Speaking, writing, or persuading</option><option value="Hospitality">Helping people and making them feel welcome</option></select></div>
+    <div class="quiz-step"><label for="q3">3. Pick a project you'd try.</label><select id="q3"><option value="">Choose one…</option><option value="Business">Create a business plan and price a product</option><option value="Arts">Design a brand, product, or visual</option><option value="Communications">Promote an event through social media</option><option value="Hospitality">Design a menu or plan a school event</option></select></div>
+    <button class="btn primary" id="findBtn">Reveal my starting path ✨</button>
+   </div>
+   <div class="result" id="result" aria-live="polite"><h3>Your next chapter starts here.</h3><p>Answer the questions and we'll suggest a BACH area to explore, related courses, and a few career directions to investigate.</p></div>
+  </div>
+ </section>
+ <section class="section" id="myplan">
+  <div class="section-head"><div><span class="pill">SAVE YOUR IDEAS</span><h2>My Knight Path</h2><p>Save courses that interest you. Then use your list to start a conversation with your counselor.</p></div><button class="btn primary" id="downloadPlan">Download my plan</button></div>
+  <div id="planList" class="plan-list"><div class="empty">Your path is yours to build. Tap “Save course” on any course card to start your list.</div></div>
+  <p class="footnote">This demo saves your selections only in this open browser session. It does not submit course requests, register you for classes, or send personal information to the school.</p>
+ </section>
+ <section class="section">
+  <div class="panel"><h2 style="margin-top:0">Ready to turn curiosity into a plan?</h2><p style="color:var(--muted);line-height:1.6">Use this app to explore. Use the official course guide and a counselor to confirm what fits your graduation plan. A great future can start with one class you didn't know existed.</p><a class="btn primary" href="https://memorial.sdb.k12.wi.us/students-and-families/2024-2025-course-guide" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">View BMHS course guide ↗</a></div>
+ </section>
+</main>
+<div class="footer">DISCOVER YOUR KNIGHT PATH · Beloit Memorial High School<br><span style="color:#cbb9e0">Explore • Experience • Connect • Build</span></div>
+<div class="toast" id="toast"></div>
+<dialog class="pd-dialog" id="pathwayDialog" aria-labelledby="pdTitle">
+ <div class="pd-head"><span class="tag" id="pdArea"></span><h2 id="pdTitle"></h2><button class="pd-close" id="pdClose" aria-label="Close pathway details">✕</button></div>
+ <div class="pd-body" id="pdBody"></div>
+</dialog>
+<script>
+const courses = [
+ {name:"Business Foundations",area:"Business",subarea:"Business",credit:"1.0",grades:"9–12",prereq:"None listed",desc:"Explore the business world through consumerism, insurance, taxes, credit, banking, occupations, careers, and money management.",skills:["business basics","money management","decision-making"],careers:["Business owner","Operations coordinator","Office manager"],next:"Microsoft Office, Accounting, Entrepreneurship"},
+ {name:"Accounting",area:"Business",subarea:"Business / Finance",credit:"1.0",grades:"9–12",prereq:"None listed",desc:"Learn journalizing, posting, financial statements, end-of-period activities, checkbook reconciliation, and money management.",skills:["financial records","accuracy","analysis"],careers:["Accountant","Bookkeeper","Financial analyst"],next:"Advanced Accounting, Business Foundations"},
+ {name:"Advanced Accounting",area:"Business",subarea:"Business / Finance",credit:"1.0",grades:"10–12",prereq:"Accounting",desc:"Build on accounting foundations by exploring special journals, corporations, nonprofits, prepaid expenses, and bad debts.",skills:["financial analysis","recordkeeping","problem-solving"],careers:["Accountant","Payroll specialist","Financial analyst"],next:"Accounting, Business & Personal Law"},
+ {name:"Entrepreneurship",area:"Business",subarea:"Entrepreneurship",credit:"1.0",grades:"9–12",prereq:"None listed",desc:"Build entrepreneurial knowledge and experience through projects, speakers, and exploring business ideas.",skills:["opportunity recognition","planning","pitching"],careers:["Entrepreneur","Product developer","Small-business owner"],next:"Entrepreneurship 2, Accounting, Introduction to Marketing"},
+ {name:"Entrepreneurship 2",area:"Business",subarea:"Entrepreneurship",credit:"1.0",grades:"10–12",prereq:"Entrepreneurship",desc:"Refine a business idea through strategic thinking, business planning, and execution strategies.",skills:["business planning","strategy","execution"],careers:["Founder","Business operations lead","E-commerce manager"],next:"Entrepreneurship, Accounting, Advanced Marketing"},
+ {name:"Business & Personal Law",area:"Business",subarea:"Business",credit:"0.5",grades:"11–12",prereq:"None listed",desc:"Explore contracts, courts, crime, insurance, property, landlord-tenant relationships, and legal issues; students participate in a mock trial.",skills:["legal reasoning","contracts","ethical decisions"],careers:["Legal assistant","Compliance specialist","Business manager"],next:"Business Foundations, Entrepreneurship"},
+ {name:"Sports & Entertainment Management",area:"Business",subarea:"Business / Marketing",credit:"0.5",grades:"9–12",prereq:"Introduction to Marketing",desc:"Explore how sports and entertainment organizations operate, including facility management, promotion, public relations, sponsorships, community service, and legal issues.",skills:["promotion","sponsorship","event operations"],careers:["Sports marketer","Event promoter","Venue coordinator"],next:"Introduction to Marketing, Advanced Marketing"},
+ {name:"Introduction to Marketing",area:"Business",subarea:"Business / Marketing",credit:"1.0",grades:"9–12",prereq:"None listed",desc:"Learn economics, selling, pricing, product development, advertising, employability skills, and teamwork through real-life business projects.",skills:["customer research","product development","advertising"],careers:["Marketing specialist","Brand coordinator","Market researcher"],next:"Advanced Marketing, Sports & Entertainment Management"},
+ {name:"Advanced Marketing",area:"Business",subarea:"Business / Marketing",credit:"1.0",grades:"10–12",prereq:"Introduction to Marketing",desc:"Develop branding strategies, social media campaigns, communication strategies, merchandising, small-business skills, and management abilities.",skills:["branding","social media","management"],careers:["Marketing manager","Social media strategist","Brand specialist"],next:"Introduction to Marketing, Entrepreneurship"},
+ {name:"Microsoft Office",area:"Business",subarea:"Business Technology",credit:"1.0",grades:"9–12",prereq:"None listed",desc:"Build Word, PowerPoint, and Excel skills, with the opportunity to earn Microsoft Office Specialist certification.",skills:["digital productivity","spreadsheets","presentations"],careers:["Administrative specialist","Office coordinator","Project assistant"],next:"Accounting, Business Foundations"},
+ {name:"Media Journalism",area:"Communications",subarea:"Communication",credit:"1.0",grades:"9–12",prereq:"None listed",desc:"Gather, write, report, and edit news and feature stories; explore documentaries, podcasts, current events, and media literacy.",skills:["reporting","editing","media literacy"],careers:["Journalist","Editor","Podcast producer"],next:"Introduction to Public Speaking, Digital Art, Graphic Design"},
+ {name:"Introduction to Public Speaking",area:"Communications",subarea:"Communication",credit:"1.0",grades:"11–12",prereq:"2.5 GPA; Early College Credit application required for the college-credit option",desc:"Build confidence and precision in oral communication through informative, persuasive, introductory, and impromptu speeches; students also produce daily and video announcements.",skills:["public speaking","persuasion","listening"],careers:["Communications specialist","Teacher","Public relations specialist"],next:"Media Journalism, Creative Writing, Graphic Design"},
+ {name:"Performing Arts",area:"Arts",subarea:"Music & Performing Arts",credit:"0.5",grades:"9–12",prereq:"None listed",desc:"Explore beginning acting by preparing monologues, interpreting scenes, analyzing scripts, and performing for an audience.",skills:["acting","interpretation","performance"],careers:["Actor","Presenter","Drama educator"],next:"Advanced Acting, Theatre Arts, Theatre Crafts"},
+ {name:"Advanced Acting",area:"Arts",subarea:"Music & Performing Arts",credit:"0.5",grades:"9–12",prereq:"Performing Arts",desc:"Develop character, vocal and interpretation techniques, text analysis, period styles, musical-theatre choreography, commedia, and stage combat.",skills:["character development","voice","stagecraft"],careers:["Actor","Voice performer","Theatre director"],next:"Performing Arts, Theatre Arts"},
+ {name:"Theatre Arts",area:"Arts",subarea:"Music & Performing Arts",credit:"1.0",grades:"9–12",prereq:"Performing Arts",desc:"Learn staging and improvisation, and write original plays adapted from social issues, stories, nonfiction, and poetry.",skills:["scriptwriting","improvisation","production"],careers:["Playwright","Actor","Theatre educator"],next:"Performing Arts, Advanced Acting, Theatre Crafts"},
+ {name:"Theatre Crafts",area:"Arts",subarea:"Music & Performing Arts",credit:"1.0",grades:"10–12",prereq:"Performing Arts",desc:"Explore behind-the-scenes theatre design through lighting, sound, costumes, sets, props, painting, and hands-on production work.",skills:["set design","lighting and sound","costume design"],careers:["Set designer","Lighting technician","Costume designer"],next:"Performing Arts, Theatre Arts, Graphic Design"},
+ {name:"Class Piano",area:"Arts",subarea:"Music & Performing Arts",credit:"0.5",grades:"9–12",prereq:"None listed",desc:"Learn piano performance, posture, technique, note reading, rhythm, and introductory music theory.",skills:["piano performance","music reading","practice"],careers:["Musician","Music teacher","Accompanist"],next:"Basic Music Theory, AP Music Theory"},
+ {name:"Basic Music Theory",area:"Arts",subarea:"Music & Performing Arts",credit:"0.5",grades:"9–12",prereq:"None listed; prior music knowledge is helpful but not required",desc:"Learn musical notation, terminology, rhythm, intervals, and scales. This course provides the foundation for AP Music Theory.",skills:["music notation","rhythm","composition basics"],careers:["Musician","Composer","Music educator"],next:"AP Music Theory, Class Piano"},
+ {name:"AP Music Theory",area:"Arts",subarea:"Music & Performing Arts",credit:"1.0",grades:"10–12",prereq:"Basic Music Theory; participation in an ensemble or private lessons is highly encouraged",desc:"Study college-level music theory, pitch, scales, rhythm, harmony, melodic analysis, aural skills, composition, and musical forms.",skills:["composition","aural analysis","music theory"],careers:["Composer","Music director","Music educator"],next:"Basic Music Theory, Class Piano"},
+ {name:"2-D Art",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"9–12",prereq:"None listed",desc:"Create drawings, paintings, prints, photographs, collages, and digital artworks while learning elements of art and principles of design.",skills:["drawing","composition","design"],careers:["Illustrator","Photographer","Graphic designer"],next:"Drawing, Painting, Photography, Digital Art"},
+ {name:"3-D Art",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"9–12",prereq:"None listed",desc:"Learn three-dimensional building techniques using materials such as wire, clay, papier-mâché, and cardboard.",skills:["model-making","sculpture","craftsmanship"],careers:["Sculptor","Product designer","Model maker"],next:"Sculpture, Clay Ceramics, Fashion Design"},
+ {name:"Drawing",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"9–12",prereq:"2-D Art",desc:"Develop drawing skills in line, value, texture, color, composition, proportion, perspective, and expressive media.",skills:["illustration","observation","visual communication"],careers:["Illustrator","Concept artist","Designer"],next:"Advanced Drawing, Painting, AP Art & Design"},
+ {name:"Advanced Drawing",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"10–12",prereq:"Drawing",desc:"Explore advanced drawing techniques, themes, expressive media, mixed media, and a personal artistic style.",skills:["advanced illustration","mixed media","portfolio development"],careers:["Illustrator","Fine artist","Concept artist"],next:"Drawing, AP Art & Design"},
+ {name:"Painting",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"9–12",prereq:"2-D Art; Drawing is recommended",desc:"Explore watercolor, acrylic, tempera, pastel, mixed media, color theory, and painting techniques across a variety of subjects.",skills:["color theory","painting","composition"],careers:["Painter","Illustrator","Art educator"],next:"Drawing, AP Art & Design"},
+ {name:"Sculpture",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"9–12",prereq:"3-D Art",desc:"Explore installations, assemblages, and additive and subtractive sculpture using materials such as clay, plaster, wire, cloth, and paper.",skills:["sculpting","spatial thinking","materials"],careers:["Sculptor","Public artist","Exhibit designer"],next:"3-D Art, Clay Ceramics, AP Art & Design"},
+ {name:"Photography",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"9–12",prereq:"2-D Art",desc:"Explore digital photography, image manipulation, photographic history, and applications in commercial, fine-art, fashion, and photojournalism settings.",skills:["photography","image editing","visual storytelling"],careers:["Photographer","Photojournalist","Commercial artist"],next:"Digital Art, Graphic Design, Video Arts"},
+ {name:"Digital Art",area:"Arts",subarea:"Visual Arts / Business / Communication",credit:"0.5",grades:"9–12",prereq:"2-D Art",desc:"Use digital tools such as Photoshop, Procreate, and Photopea for digital painting, character illustration, design thinking, and photo manipulation.",skills:["digital illustration","photo editing","design thinking"],careers:["Digital artist","Graphic designer","Illustrator"],next:"Advanced Digital Art, Graphic Design, Video Arts"},
+ {name:"Advanced Digital Art",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"10–12",prereq:"Digital Art",desc:"Advance digital drawing, painting, and photo-manipulation skills using tools such as Photoshop, Procreate, Photopea, and Blender.",skills:["digital production","photo manipulation","portfolio building"],careers:["Digital artist","Motion artist","Illustrator"],next:"Digital Art, AP Art & Design, Graphic Design"},
+ {name:"Clay Ceramics",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"9–12",prereq:"3-D Art",desc:"Create pottery and sculpture with coil, pinch, and slab methods; explore finishing, glazing, and cultural traditions in ceramics.",skills:["hand building","ceramic design","craftsmanship"],careers:["Ceramic artist","Potter","Product maker"],next:"Advanced Ceramics, Sculpture, AP Art & Design"},
+ {name:"Advanced Ceramics",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"10–12",prereq:"Clay Ceramics",desc:"Create more complex ceramic forms, explore wheel throwing, and use texture, carving, and glazing techniques.",skills:["wheel throwing","ceramic design","surface finishing"],careers:["Ceramic artist","Potter","Studio artist"],next:"Clay Ceramics, AP Art & Design"},
+ {name:"Fashion Design",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"10–12",prereq:"2-D Art or 3-D Art",desc:"Learn hand and machine sewing, upcycling, pattern-based garment making, fashion illustration, and design using new and recycled fabrics.",skills:["sewing","fashion illustration","textile design"],careers:["Fashion designer","Costume designer","Textile artist"],next:"2-D Art, 3-D Art, The Business of Art"},
+ {name:"Graphic Design",area:"Arts",subarea:"Visual Arts / Business / Communication",credit:"0.5",grades:"9–12",prereq:"2-D Art; Photography is recommended",desc:"Apply graphic design theory to real-world projects such as logos, branding, packaging, advertisements, page layouts, and album art.",skills:["branding","layout","visual communication"],careers:["Graphic designer","Art director","Brand designer"],next:"Digital Art, Introduction to Marketing, The Business of Art"},
+ {name:"Murals / Community Arts",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"10–12",prereq:"2-D Art",desc:"Explore public art, street art, sculpture, and community projects; plan and scale murals at BMHS and learn about art in different cultures.",skills:["public art","collaboration","community engagement"],careers:["Mural artist","Community arts coordinator","Public artist"],next:"Graphic Design, Painting, The Business of Art"},
+ {name:"The Business of Art",area:"Arts",subarea:"Visual Arts / Business",credit:"0.5",grades:"10–12",prereq:"2 prior art courses",desc:"Explore selling creative products, building a business plan, creating social media content, developing products, and selling online and at a local art/craft venue.",skills:["creative entrepreneurship","product development","social selling"],careers:["Independent artist","Creative business owner","Product designer"],next:"Entrepreneurship, Graphic Design, Digital Art"},
+ {name:"Video Arts",area:"Arts",subarea:"Visual Arts",credit:"0.5",grades:"9–12",prereq:"2-D Art; Photography is recommended",desc:"Explore filmmaking through storyboarding, scriptwriting, camera techniques, lighting, editing, and collaborative short-film projects.",skills:["filmmaking","storyboarding","video editing"],careers:["Video editor","Filmmaker","Content producer"],next:"Photography, Digital Art, Media Journalism"},
+ {name:"AP Art & Design",area:"Arts",subarea:"Visual Arts",credit:"1.0",grades:"11–12",prereq:"3 prior art courses or instructor permission; AP Art Portfolio Development must also be taken",desc:"Develop an artistic voice and create a portfolio of 15 artworks or artifacts across a chosen medium; eligible students may submit a portfolio for AP assessment.",skills:["portfolio development","artistic voice","independent studio practice"],careers:["Fine artist","Designer","Illustrator"],next:"AP Art Portfolio Development, Graphic Design, Advanced Digital Art"},
+ {name:"AP Art Portfolio Development",area:"Arts",subarea:"Visual Arts",credit:"1.0",grades:"11–12",prereq:"3 prior art courses or instructor permission; taken concurrently with AP Art & Design",desc:"Provides additional studio time for students building the 15-artifact AP Art & Design portfolio.",skills:["portfolio planning","studio practice","artistic development"],careers:["Fine artist","Designer","Illustrator"],next:"AP Art & Design, Advanced Drawing, Advanced Digital Art"},
+ {name:"Hospitality Services 1",area:"Hospitality",subarea:"Hospitality",credit:"0.5",grades:"9–12",prereq:"None listed",desc:"Explore hospitality careers and commercial kitchen basics, including knife skills and safety, sanitation, equipment, food preparation, baking, nutrition, and menu planning.",skills:["food preparation","kitchen safety","menu planning"],careers:["Chef","Baker","Hospitality team member"],next:"Hospitality Services 2, Psychology"},
+ {name:"Hospitality Services 2",area:"Hospitality",subarea:"Hospitality",credit:"0.5",grades:"10–12",prereq:"Hospitality Services 1",desc:"Build hospitality skills through catered events and preparation for the student-run café, including cooking, baking, sanitation, food safety, and commercial equipment.",skills:["catering","food safety","teamwork"],careers:["Caterer","Chef","Café manager"],next:"Hospitality Services 3 & Community Service"},
+ {name:"Hospitality Services 3 & Community Service",area:"Hospitality",subarea:"Hospitality",credit:"1.0",grades:"10–12",prereq:"Hospitality Services 2; internship placement context",desc:"Connect learning to an internship placement for students interested in food service, community service, interior design, or clothing-related careers.",skills:["work-based learning","service","professional skills"],careers:["Hospitality manager","Community service professional","Food-service entrepreneur"],next:"Hospitality Services 1, Hospitality Services 2, work-based learning"}
+];
+
+
+const knightQuest = {
+ questions:[
+  {id:"make",kicker:"ROUND 1 · YOUR KIND OF PROJECT",title:"You get a free afternoon to make something. What sounds most fun?",sub:"Pick the option you would be most excited to try.",choices:[
+   {id:"create",icon:"🎨",title:"Design something people notice",desc:"Logos, art, products, clothes, or visuals"},
+   {id:"build",icon:"🚀",title:"Turn an idea into a business",desc:"Create a product, plan, or mini brand"},
+   {id:"tell",icon:"🎤",title:"Make a story people want to hear",desc:"Videos, podcasts, news, or speaking"},
+   {id:"host",icon:"🍽️",title:"Create an awesome experience",desc:"Food, events, hospitality, or service"}]},
+  {id:"strength",kicker:"ROUND 2 · YOUR SUPERPOWER",title:"What do people tend to count on you for?",sub:"Choose the strength that feels closest to you right now.",choices:[
+   {id:"create",icon:"💡",title:"Fresh ideas and creativity",desc:"I like imagining possibilities and making things"},
+   {id:"build",icon:"🧩",title:"Planning and problem-solving",desc:"I like organizing details and making ideas work"},
+   {id:"tell",icon:"💬",title:"Communication and connection",desc:"I like explaining, persuading, or sharing stories"},
+   {id:"host",icon:"🤝",title:"Helping people feel welcome",desc:"I notice what people need and enjoy teamwork"}]},
+  {id:"mission",kicker:"ROUND 3 · CHOOSE YOUR MISSION",title:"Which challenge would you most want your team to tackle?",sub:"Imagine this as a real school project. Which role would you choose first?",choices:[
+   {id:"create",icon:"🖌️",title:"Design the look and feel",desc:"Create a logo, visual identity, or product"},
+   {id:"build",icon:"📈",title:"Make the plan work",desc:"Research customers, set prices, and manage a budget"},
+   {id:"tell",icon:"📹",title:"Get people interested",desc:"Create a campaign, video, or presentation"},
+   {id:"host",icon:"🎉",title:"Make the experience great",desc:"Plan the event, service, menu, or guest experience"}]},
+  {id:"next",kicker:"BONUS ROUND · YOUR NEXT STEP",title:"What would you like to try next?",sub:"This helps personalize your course suggestions.",choices:[
+   {id:"explore",icon:"🔎",title:"Try a little of everything",desc:"I want to discover new interests"},
+   {id:"create",icon:"🛠️",title:"Make something hands-on",desc:"I learn best by creating and testing"},
+   {id:"team",icon:"👥",title:"Work with a team",desc:"I like collaborating and sharing roles"},
+   {id:"lead",icon:"🌟",title:"Lead a project",desc:"I want to organize, present, or take charge"}]}
+ ],
+ profiles:{
+  create:{title:"The Creative Maker",icon:"🎨",summary:"You may enjoy turning ideas into visual experiences, products, or designs. Explore how creativity connects to business and communication, too.",areas:["Arts","Business","Communications"],courses:["2-D Art","Digital Art","Graphic Design","Photography","Fashion Design","The Business of Art"],careers:["Graphic designer","Photographer","Illustrator","Creative entrepreneur"],mission:"Design a brand identity for a school event or create a prototype product."},
+  build:{title:"The Idea Builder",icon:"🚀",summary:"You may enjoy solving practical problems, spotting opportunities, and turning ideas into plans. Business courses can help you test whether an idea works in the real world.",areas:["Business","Arts","Communications"],courses:["Business Foundations","Entrepreneurship","Introduction to Marketing","Accounting","Microsoft Office","Entrepreneurship 2"],careers:["Entrepreneur","Marketing specialist","Accountant","Project coordinator"],mission:"Find a need at school, research customers, and build a simple business plan."},
+  tell:{title:"The Story Connector",icon:"🎤",summary:"You may enjoy sharing messages, helping people understand ideas, and building an audience. Explore journalism, speaking, design, and marketing.",areas:["Communications","Arts","Business"],courses:["Media Journalism","Introduction to Public Speaking","Digital Art","Graphic Design","Introduction to Marketing"],careers:["Journalist","Content creator","Public relations specialist","Podcast producer"],mission:"Create a short video or campaign that gets students interested in an opportunity."},
+  host:{title:"The Experience Maker",icon:"🍽️",summary:"You may enjoy helping people, organizing details, and creating memorable experiences. Hospitality can connect food, service, events, and entrepreneurship.",areas:["Hospitality","Business","Communications"],courses:["Hospitality Services 1","Hospitality Services 2","Hospitality Services 3 & Community Service","Introduction to Marketing","Entrepreneurship"],careers:["Chef","Caterer","Hospitality manager","Event coordinator"],mission:"Plan a small event or menu that balances what guests want with time and budget."}
+ }
+};
+let questStep=-1, questAnswers={};
+
+const pathwayMaps = {
+ design:{
+  note:"This is an example route, not a required four-year schedule. The guide lists prerequisites for several art courses; course availability and the best sequence should be checked with an art teacher or counselor.",
+  steps:[
+   {label:"START HERE",title:"2-D Art or 3-D Art",copy:"Try visual ideas, materials, and the basics of design.",courses:["2-D Art","3-D Art"]},
+   {label:"BUILD SKILLS",title:"Choose a specialty",copy:"Follow what you enjoy: drawing, photography, digital art, ceramics, or fashion.",courses:["Drawing","Photography","Digital Art","Clay Ceramics","Fashion Design"]},
+   {label:"GO FURTHER",title:"Advanced creative work",copy:"Develop a stronger portfolio or apply design to real-world products and brands.",courses:["Advanced Digital Art","Advanced Drawing","AP Art & Design","Graphic Design","The Business of Art"]},
+   {label:"CAREER POSSIBILITIES",title:"Make ideas useful",copy:"Explore work in visual communication, products, creative services, or your own creative business.",careers:["Graphic designer","Photographer","Illustrator","Creative entrepreneur"]}
+  ]},
+ business:{
+  note:"Course sequence details are based on the BACH pathway chart and individual course prerequisites in the 2026–2027 BMHS guide. This map is a planning aid, not a guaranteed schedule.",
+  steps:[
+   {label:"START HERE",title:"Explore business",copy:"Learn how organizations work, or start exploring how ideas become products.",courses:["Business Foundations","Entrepreneurship","Introduction to Marketing"]},
+   {label:"BUILD SKILLS",title:"Learn the tools",copy:"Develop skills in money, records, promotion, and digital productivity.",courses:["Accounting","Microsoft Office","Introduction to Marketing"]},
+   {label:"GO FURTHER",title:"Choose a direction",copy:"Build a business plan, explore advanced marketing, or deepen accounting skills.",courses:["Entrepreneurship 2","Advanced Marketing","Advanced Accounting","Business & Personal Law"]},
+   {label:"CAREER POSSIBILITIES",title:"Build or lead",copy:"Connect your strengths to running projects, promoting products, or managing operations.",careers:["Entrepreneur","Marketing specialist","Accountant","Business operations lead"]}
+  ]},
+ media:{
+  note:"The guide identifies Media Journalism and Introduction to Public Speaking in the BACH Communication pathway. Digital Art and Introduction to Graphic Art also appear in the pathway chart. Confirm prerequisites and current availability with BMHS.",
+  steps:[
+   {label:"START HERE",title:"Find your voice",copy:"Explore news, storytelling, audiences, and how messages shape understanding.",courses:["Media Journalism"]},
+   {label:"BUILD SKILLS",title:"Make media",copy:"Combine writing and communication with visual storytelling and design.",courses:["Digital Art","Introduction to Graphic Art","Creative Writing"]},
+   {label:"GO FURTHER",title:"Present & publish",copy:"Practice speaking, presenting ideas, and creating content for an audience.",courses:["Introduction to Public Speaking","Media Journalism"]},
+   {label:"CAREER POSSIBILITIES",title:"Inform & connect",copy:"Explore roles that communicate stories, ideas, and messages to different audiences.",careers:["Journalist","Podcast producer","Public relations specialist","Content creator"]}
+  ]},
+ performance:{
+  note:"The BACH Arts pathway chart describes music performance and theatre arts sequences. Participation in a performance ensemble and theatre production requirements may apply; review the official guide with the relevant teacher.",
+  steps:[
+   {label:"START HERE",title:"Try performing",copy:"Explore acting, piano, or participation in a performance ensemble.",courses:["Performing Arts","Class Piano"]},
+   {label:"BUILD SKILLS",title:"Practice & develop",copy:"Build technique in acting or music theory and continue ensemble participation.",courses:["Advanced Acting","Basic Music Theory"]},
+   {label:"GO FURTHER",title:"Create a production",copy:"Explore theatre production, backstage design, or advanced music theory.",courses:["Theatre Arts","Theatre Crafts","AP Music Theory"]},
+   {label:"CAREER POSSIBILITIES",title:"Perform or produce",copy:"Consider careers onstage, backstage, in music, or in arts education.",careers:["Actor","Theatre technician","Musician","Stage designer"]}
+  ]},
+ hospitality:{
+  note:"The guide lists Hospitality Services 1, 2, and 3 & Community Service with prerequisite progression. Career examples are possibilities, not promises; internship placement and availability should be confirmed.",
+  steps:[
+   {label:"START HERE",title:"Hospitality Services 1",copy:"Explore kitchen basics, food safety, nutrition, menuing, and hospitality careers.",courses:["Hospitality Services 1"]},
+   {label:"BUILD SKILLS",title:"Hospitality Services 2",copy:"Practice food preparation and service through catered events and the student-run café.",courses:["Hospitality Services 2"]},
+   {label:"GO FURTHER",title:"Hospitality Services 3",copy:"Connect learning with an internship placement and community-service context.",courses:["Hospitality Services 3 & Community Service"]},
+   {label:"CAREER POSSIBILITIES",title:"Create experiences",copy:"Explore food service, catering, guest experience, and related service careers.",careers:["Chef","Caterer","Hospitality manager","Food-service entrepreneur"]}
+  ]}
+};
+function renderPathway(key){
+ const map=pathwayMaps[key]; if(!map)return;
+ document.querySelectorAll('.pathway-tab').forEach(b=>{const active=b.dataset.map===key;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));});
+ document.getElementById('pathwayFlow').innerHTML=map.steps.map((s,i)=>{
+  const items=s.courses||s.careers||[];
+  const isCareer=!s.courses;
+  const buttonText=isCareer?'Explore related courses':'Find these courses';
+  return `<article class="pathway-step"><div class="step-label">${esc(s.label)}</div><h3>${esc(s.title)}</h3><p>${esc(s.copy)}</p><button data-path-search="${esc(items.join('|'))}" data-career-step="${isCareer?'yes':'no'}">${buttonText} ↗</button></article>`;
+ }).join('');
+ document.getElementById('pathwayNote').textContent=map.note;
+ document.querySelectorAll('[data-path-search]').forEach(b=>b.addEventListener('click',()=>{
+  const names=b.dataset.pathSearch.split('|');activePath='All';areaFilter.value='All';search.value='';
+  document.querySelectorAll('.path-card').forEach(c=>c.classList.remove('selected'));
+  renderCourses();
+  if(b.dataset.careerStep==='yes'){
+   search.value=names[0];renderCourses();
+   showToast('Career ideas are starting points. Search related courses and talk with a counselor.');
+  }else{
+   const matching=courses.filter(c=>names.includes(c.name));
+   const missing=names.filter(n=>!courses.some(c=>c.name===n));
+   if(matching.length){
+    search.value=names[0];renderCourses();
+    showToast(matching.length>1?'Showing the first course. Search another listed course to compare options.':'Showing '+matching[0].name);
+   }else showToast('Check the official guide for this course name and current availability.');
+  }
+  document.getElementById('explore').scrollIntoView({behavior:'smooth'});
+ }));
+}
+document.querySelectorAll('.pathway-tab').forEach(b=>b.addEventListener('click',()=>renderPathway(b.dataset.map)));
+
+const courseGrid=document.getElementById('courseGrid'), search=document.getElementById('search'), areaFilter=document.getElementById('areaFilter'), sortFilter=document.getElementById('sortFilter');
+let saved=new Set(), activePath='All';
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderCourses(){
+ let term=search.value.toLowerCase(), area=areaFilter.value;
+ let list=courses.filter(c=>(area==='All'||c.area===area)&&(activePath==='All'||c.area===activePath)&&[c.name,c.desc,c.area,c.subarea,c.prereq,...c.skills,...c.careers].join(' ').toLowerCase().includes(term));
+ if(sortFilter.value==='az')list.sort((a,b)=>a.name.localeCompare(b.name));
+ courseGrid.innerHTML=list.length?list.map(c=>`<article class="course-card"><div class="course-top"><span class="tag">${esc(c.area)}</span><span aria-hidden="true">✦</span></div><h3>${esc(c.name)}</h3><p>${esc(c.desc)}</p><p class="footnote"><strong>${esc(c.credit)} credit</strong> · Grades ${esc(c.grades)}<br><strong>Prerequisite:</strong> ${esc(c.prereq)}</p><p><strong>Skills you'll build</strong><br>${c.skills.map(esc).join(' · ')}</p><p class="careers"><strong>Career directions</strong><br>${c.careers.map(esc).join(' · ')}</p><p class="footnote"><strong>Explore next:</strong> ${esc(c.next)}</p><div class="actions"><button class="mini ${saved.has(c.name)?'saved save':''}" data-save="${esc(c.name)}">${saved.has(c.name)?'✓ Saved':'＋ Save course'}</button><button class="mini" data-details="${esc(c.name)}">Pathway details</button></div></article>`).join(''):'<div class="empty" style="grid-column:1/-1">No matches yet. Try a different search or area.</div>';
+ courseGrid.querySelectorAll('[data-save]').forEach(b=>b.onclick=()=>toggleSave(b.dataset.save));
+ courseGrid.querySelectorAll('[data-details]').forEach(b=>b.onclick=()=>openPathwayDetails(b.dataset.details));
+}
+const pathwayDialog=document.getElementById('pathwayDialog');
+function openPathwayDetails(name){
+ const c=courses.find(x=>x.name===name); if(!c)return;
+ document.getElementById('pdArea').textContent=c.area;
+ document.getElementById('pdTitle').textContent=c.name;
+ const next=c.next.split(/,\s*/).map(n=>courses.some(x=>x.name===n)?`<button class="pd-chip" data-pd-open="${esc(n)}">${esc(n)} ↗</button>`:`<span class="pd-chip">${esc(n)}</span>`).join('');
+ document.getElementById('pdBody').innerHTML=`<p>${esc(c.desc)}</p>
+  <div class="pd-facts"><div class="pd-fact"><span>Credit</span>${esc(c.credit)}</div><div class="pd-fact"><span>Grades</span>${esc(c.grades)}</div><div class="pd-fact"><span>Prerequisite</span>${esc(c.prereq)}</div></div>
+  <div class="pd-section"><h3>Your pathway</h3><div class="pd-next"><span class="pd-chip" style="background:var(--purple);color:white;border-color:var(--purple)">${esc(c.name)}</span><span class="pd-arrow" aria-hidden="true">→</span>${next}</div></div>
+  <div class="pd-section"><h3>Skills you'll build</h3><p>${c.skills.map(esc).join(' · ')}</p></div>
+  <div class="pd-section"><h3>Career directions</h3><p>${c.careers.map(esc).join(' · ')}</p></div>
+  <p class="pd-note">Confirm course sequences and availability in the official guide and with a counselor.</p>
+  <div class="pd-actions"><button class="btn primary" id="pdSave">${saved.has(c.name)?'✓ Saved to My Knight Path':'＋ Save course'}</button><button class="btn pd-done" id="pdDone">Close</button></div>`;
+ document.getElementById('pdSave').onclick=()=>{toggleSave(c.name);openPathwayDetails(c.name);};
+ document.getElementById('pdDone').onclick=()=>pathwayDialog.close();
+ pathwayDialog.querySelectorAll('[data-pd-open]').forEach(b=>b.onclick=()=>openPathwayDetails(b.dataset.pdOpen));
+ if(!pathwayDialog.open)pathwayDialog.showModal();
+ pathwayDialog.scrollTop=0;
+}
+document.getElementById('pdClose').onclick=()=>pathwayDialog.close();
+pathwayDialog.addEventListener('click',e=>{if(e.target===pathwayDialog)pathwayDialog.close();});
+function toggleSave(name){if(saved.has(name))saved.delete(name);else saved.add(name);renderCourses();renderPlan();document.getElementById('navCount').textContent=saved.size;showToast(saved.has(name)?'Saved to My Knight Path':'Removed from My Knight Path');}
+function renderQuestStart(){
+ document.getElementById('questApp').innerHTML=`<div class="quest-start"><div class="hero-icon">🧭✨</div><div class="quest-kicker">Your future, your choices</div><h3>Ready to discover your Knight Path?</h3><p>There are no wrong answers and no single “right” future. This short quest helps you notice what you like doing and connects your interests to BMHS BACH courses and possible careers.</p><div class="quest-actions"><button class="btn primary" id="questStart">Start my quest →</button><button class="btn secondary" data-jump="pathway-map">Explore pathways first</button></div></div>`;
+ document.getElementById('questStart').onclick=()=>{questStep=0;questAnswers={};renderQuestQuestion();};
+ document.querySelectorAll('#questApp [data-jump]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.jump).scrollIntoView({behavior:'smooth'}));
+}
+function renderQuestQuestion(){
+ const q=knightQuest.questions[questStep], selected=questAnswers[q.id]||'';
+ const pct=Math.round((questStep/knightQuest.questions.length)*100);
+ document.getElementById('questApp').innerHTML=`<div class="quest-head"><span class="quest-kicker">${esc(q.kicker)}</span><span class="quest-badge">QUESTION ${questStep+1} OF ${knightQuest.questions.length}</span></div><div class="quest-progress"><div class="quest-progress-fill" style="width:${pct}%"></div></div><h3 class="quest-question">${esc(q.title)}</h3><p class="quest-sub">${esc(q.sub)}</p><div class="quest-choices">${q.choices.map(c=>`<button class="quest-choice ${selected===c.id?'selected':''}" data-answer="${c.id}" aria-pressed="${selected===c.id}"><span class="qemoji">${c.icon}</span><span><strong>${esc(c.title)}</strong><small>${esc(c.desc)}</small></span></button>`).join('')}</div><div class="quest-controls"><button class="btn secondary" id="questBack">${questStep===0?'Exit quest':'← Back'}</button><span style="color:#e8dcf6;font-size:.85rem">Choose what feels right for you.</span><button class="btn primary" id="questNext" ${selected?'':'disabled'}>${questStep===knightQuest.questions.length-1?'Unlock my path ✨':'Next →'}</button></div>`;
+ document.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>{questAnswers[q.id]=b.dataset.answer;renderQuestQuestion();});
+ document.getElementById('questBack').onclick=()=>{if(questStep===0){questStep=-1;renderQuestStart();}else{questStep--;renderQuestQuestion();}};
+ document.getElementById('questNext').onclick=()=>{if(!questAnswers[q.id])return;if(questStep<knightQuest.questions.length-1){questStep++;renderQuestQuestion();}else renderQuestResult();};
+}
+function renderQuestResult(){
+ const counts={create:0,build:0,tell:0,host:0};
+ ['make','strength','mission'].forEach(k=>{if(counts[questAnswers[k]]!==undefined)counts[questAnswers[k]]+=2;});
+ if(counts[questAnswers.next]!==undefined)counts[questAnswers.next]+=.5;
+ const order=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+ const winner=order[0],profile=knightQuest.profiles[winner];
+ const ties=order.filter(k=>counts[k]===counts[winner]);
+ const selectedCourses=profile.courses.filter(n=>courses.some(c=>c.name===n));
+ const crossCourses=selectedCourses.slice(0,4);
+ const resultHTML=`<div class="quest-head"><span class="quest-kicker">QUEST COMPLETE</span><span class="quest-badge">PATH UNLOCKED ✨</span></div><div class="quest-progress"><div class="quest-progress-fill" style="width:100%"></div></div><div class="quest-result-grid"><div class="quest-result-card"><div style="font-size:2.5rem">${profile.icon}</div><div class="quest-kicker">YOUR STARTING PATH</div><h3>${esc(profile.title)}</h3><p>${esc(profile.summary)}</p><div class="quest-tags">${profile.areas.map(a=>`<span class="quest-tag">${esc(a)}</span>`).join('')}</div><p><strong>Try this real-world mission</strong><br>${esc(profile.mission)}</p></div><div class="quest-result-card"><div class="quest-kicker">COURSES TO EXPLORE</div><h3>Your shortlist</h3><ul>${crossCourses.map(n=>`<li>${esc(n)}</li>`).join('')}</ul><p><strong>Possible career directions</strong><br>${profile.careers.map(esc).join(' · ')}</p><button class="btn primary" id="questSave">Save my suggested courses</button><button class="btn secondary" id="questBrowse">Browse this pathway</button></div></div><div class="quest-controls"><button class="btn secondary" id="questReplay">↻ Play again</button><span style="color:#e8dcf6;font-size:.85rem">This is a starting point, not a label.</span><button class="btn primary" id="questPlan">View My Knight Path →</button></div><p class="pathway-note">Your answers suggest interests, not a fixed personality or guaranteed career. You can explore all pathways, change your mind, and choose classes for many reasons.</p>`;
+ document.getElementById('questApp').innerHTML=resultHTML;
+ document.getElementById('questSave').onclick=()=>{selectedCourses.forEach(n=>saved.add(n));renderCourses();renderPlan();document.getElementById('navCount').textContent=saved.size;showToast('Suggested courses saved to My Knight Path');};
+ document.getElementById('questBrowse').onclick=()=>{areaFilter.value='All';search.value='';activePath='All';renderCourses();document.getElementById('explore').scrollIntoView({behavior:'smooth'});};
+ document.getElementById('questReplay').onclick=()=>{questStep=0;questAnswers={};renderQuestQuestion();};
+ document.getElementById('questPlan').onclick=()=>document.getElementById('myplan').scrollIntoView({behavior:'smooth'});
+}
+
+renderQuestStart();
+renderCourses();renderPlan();renderPathway('design');document.getElementById('navCount').textContent=saved.size;
+function renderPlan(){const el=document.getElementById('planList');if(!saved.size){el.innerHTML='<div class="empty">Your path is yours to build. Tap “Save course” on any course card to start your list.</div>';return;}el.innerHTML=[...saved].map(n=>`<div class="plan-item"><div><strong>${esc(n)}</strong><div class="footnote">${esc(courses.find(c=>c.name===n)?.area||'BACH Academy')} · Add this to your counselor conversation list</div></div><button data-remove="${esc(n)}">Remove</button></div>`).join('');el.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>toggleSave(b.dataset.remove));}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.style.display='none',3200);}
+document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>{document.getElementById(b.dataset.jump).scrollIntoView({behavior:'smooth'});document.querySelectorAll('nav button').forEach(n=>n.classList.toggle('active',n===b));}));
+document.querySelectorAll('.path-card').forEach(card=>card.addEventListener('click',()=>{const p=card.dataset.path;activePath=activePath===p?'All':p;document.querySelectorAll('.path-card').forEach(c=>c.classList.toggle('selected',c.dataset.path===activePath));areaFilter.value=activePath;search.value='';renderCourses();document.getElementById('explore').scrollIntoView({behavior:'smooth'});}));
+search.addEventListener('input',renderCourses);areaFilter.addEventListener('change',()=>{activePath='All';document.querySelectorAll('.path-card').forEach(c=>c.classList.remove('selected'));renderCourses()});sortFilter.addEventListener('change',renderCourses);
+document.getElementById('findBtn').addEventListener('click',()=>{
+ const vals=['q1','q2','q3'].map(id=>document.getElementById(id).value);
+ if(vals.some(v=>!v)){showToast('Answer all three questions to reveal your starting path.');return;}
+ const counts={Business:0,Arts:0,Communications:0,Hospitality:0};vals.forEach(v=>counts[v]++);
+ const winner=Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
+ const details={
+ Business:{icon:'🚀',headline:'The Builder & Strategist',copy:'You may enjoy turning ideas into plans, solving practical problems, and understanding how organizations work.',courses:['Business Foundations','Entrepreneurship','Introduction to Marketing','Accounting'],careers:['Entrepreneur','Operations coordinator','Marketing specialist']},
+ Arts:{icon:'🎨',headline:'The Creator & Designer',copy:'You may enjoy making original things, shaping a visual identity, and bringing ideas to life. Explore the official guide for arts courses and sequences.',courses:['Graphic Design','Digital Art','The Business of Art','Introduction to Marketing'],careers:['Graphic designer','Creative entrepreneur','Brand designer']},
+ Communications:{icon:'🎤',headline:'The Storyteller & Connector',copy:'You may enjoy shaping messages, building an audience, and helping people connect with an idea. Explore the official guide for communication and media courses.',courses:['Media Journalism','Introduction to Public Speaking','Graphic Design'],careers:['Content creator','Public relations specialist','Sports marketer']},
+ Hospitality:{icon:'🍽️',headline:'The Experience Maker',copy:'You may enjoy planning experiences, supporting people, and making events feel special. Explore the official guide for hospitality and culinary courses.',courses:['Hospitality Services 1','Hospitality Services 2','Hospitality Services 3 & Community Service'],careers:['Event coordinator','Hospitality manager','Food business owner']}
+ };
+ const d=details[winner];document.getElementById('result').innerHTML=`<div style="font-size:2rem">${d.icon}</div><h3>${d.headline}</h3><p>${d.copy}</p><p><strong>Courses to explore</strong></p><ul>${d.courses.map(c=>'<li>'+esc(c)+'</li>').join('')}</ul><p><strong>Career directions</strong><br>${d.careers.map(esc).join(' · ')}</p><button class="btn primary" id="saveSuggested">Save suggested courses</button>`;
+ document.getElementById('saveSuggested').onclick=()=>{d.courses.forEach(c=>saved.add(c));renderCourses();renderPlan();document.getElementById('navCount').textContent=saved.size;showToast('Suggested courses added to My Knight Path');document.getElementById('myplan').scrollIntoView({behavior:'smooth'});};
+});
+document.getElementById('downloadPlan').addEventListener('click',()=>{
+ if(!saved.size){showToast('Save at least one course before downloading your plan.');return;}
+ const lines=['MY KNIGHT PATH — Beloit Memorial High School','My saved courses',...([...saved].map(n=>'- '+n)),'','Questions for my counselor:','- Which courses fit my grade level and graduation plan?','- What prerequisites or course sequences should I know?','- What clubs, projects, dual-credit options, or work-based learning connect to these interests?','','Reminder: confirm current offerings and requirements in the official BMHS course guide.'];
+ const blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='My-Knight-Path.txt';a.click();URL.revokeObjectURL(url);
+});
+renderCourses();renderPlan();
+</script>
+</body></html>
